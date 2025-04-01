@@ -17,13 +17,13 @@ export const metadata = [
   {
     type: "car",
     direction: false,
-    speed: 1,
+    speed: 150,
     vehicles: [{ initialTileIndex: 2, color: 0xff0000 }],
   },
   {
     type: "truck",
     direction: false,
-    speed: 0,
+    speed: 75,
     vehicles: [{ initialTileIndex: -4, color: 0x00ff00 }],
   },
 ];
@@ -63,6 +63,7 @@ export function addRows() {
           rowData.direction,
           vehicle.color
         );
+        vehicle.ref = car;
         row.add(car);
       });
 
@@ -78,6 +79,7 @@ export function addRows() {
           rowData.direction,
           vehicle.color
         );
+        vehicle.ref = truck;
         row.add(truck);
       });
 
