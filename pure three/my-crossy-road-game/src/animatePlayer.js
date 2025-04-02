@@ -35,7 +35,7 @@ function setPosition(progress) {
 
   player.position.x = THREE.MathUtils.lerp(startX, endX, progress);
   player.position.y = THREE.MathUtils.lerp(startY, endY, progress);
-  player.position.z = Math.sin(progress * Math.PI) * tileSize * 0.2;
+  player.children[0].position.z = Math.sin(progress * Math.PI) * tileSize * 0.2;
 }
 
 function setRotation(progress) {
@@ -45,8 +45,8 @@ function setRotation(progress) {
   if (movesQueue[0] === "right") endRotation = -Math.PI / 2;
   if (movesQueue[0] === "backward") endRotation = Math.PI;
 
-  player.rotation.z = THREE.MathUtils.lerp(
-    player.rotation.z,
+  player.children[0].rotation.z = THREE.MathUtils.lerp(
+    player.children[0].rotation.z,
     endRotation,
     progress
   );
