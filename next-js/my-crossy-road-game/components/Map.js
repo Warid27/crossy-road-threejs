@@ -37,7 +37,7 @@ export default class GameMap {
 
     // Create and add new rows
     newMetadata.forEach((rowData, index) => {
-      const rowIndex = startIndex + index + 1;
+      const rowIndex = startIndex + index;
       let row;
 
       switch (rowData.type) {

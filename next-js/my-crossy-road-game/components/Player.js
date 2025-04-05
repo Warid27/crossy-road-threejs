@@ -1,5 +1,5 @@
 import * as THREE from "three";
-
+import { tileSize } from "@/app/constant";
 // Class to create and manage the player 3D model
 export default class Player {
   constructor() {
@@ -42,9 +42,9 @@ export default class Player {
   }
 
   // Reset the player's position
-  resetPosition() {
-    this.playerContainer.position.x = 0;
-    this.playerContainer.position.y = 0;
+  resetPosition(logicalPosition = { currentRow: 0, currentTile: 0 }) {
+    this.playerContainer.position.x = logicalPosition.currentTile * tileSize;
+    this.playerContainer.position.y = logicalPosition.currentRow * tileSize;
     this.playerContainer.children[0].position.z = 0;
   }
 

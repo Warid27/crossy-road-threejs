@@ -6,36 +6,40 @@ const { queueMove } = usePlayerStore.getState();
 export const movePlayer = (direction) => {
   switch (direction) {
     case "forward":
-      queueMove("forward");
-      break;
     case "backward":
-      queueMove("backward");
-      break;
     case "left":
-      queueMove("left");
-      break;
     case "right":
-      queueMove("right");
+      queueMove(direction);
       break;
     default:
       console.warn(`Unknown direction: ${direction}`);
   }
 };
 
-export const setupKeyboardControls = () => {
+export const setupKeyboardControls = (setActiveDirection) => {
   const handleKeyDown = (event) => {
+    let direction = null;
+
+    // Determine the direction based on the key pressed
     if (event.key === "ArrowUp") {
-      event.preventDefault();
-      movePlayer("forward");
+      direction = "forward";
     } else if (event.key === "ArrowDown") {
-      event.preventDefault();
-      movePlayer("backward");
+      direction = "backward";
     } else if (event.key === "ArrowLeft") {
-      event.preventDefault();
-      movePlayer("left");
+      direction = "left";
     } else if (event.key === "ArrowRight") {
+      direction = "right";
+    }
+
+    if (direction) {
       event.preventDefault();
-      movePlayer("right");
+      setActiveDirection(direction); // Set the active direction
+      movePlayer(direction); // Move the player
+
+      // Reset the active direction after 200ms
+      setTimeout(() => {
+        setActiveDirection(null);
+      }, 200);
     }
   };
 

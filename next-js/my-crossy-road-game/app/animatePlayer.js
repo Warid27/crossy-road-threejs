@@ -6,8 +6,8 @@ const moveClock = new THREE.Clock(false);
 
 export function animatePlayer() {
   const { movesQueue, position, stepCompleted } = usePlayerStore.getState();
-
   const player = usePlayerStore.getState().getPlayerModel();
+
   if (!movesQueue.length) return;
 
   if (!moveClock.running) moveClock.start();

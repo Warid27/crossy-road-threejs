@@ -17,7 +17,7 @@ export function endsUpInValidPosition(currentPosition, moves) {
   }
 
   // If hit tree
-  const finalRow = rows[finalPosition.rowIndex - 1];
+  const finalRow = rows[finalPosition.rowIndex];
   if (
     finalRow &&
     finalRow.type === "forest" &&

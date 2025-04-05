@@ -16,7 +16,7 @@ const useMapStore = create((set, get) => ({
     // Add initial grass rows
     const grassRows = Array.from({ length: 5 }, (_, i) => ({
       type: "grass",
-      rowIndex: -i,
+      rowIndex: i, // Ensure rows start at 0
     }));
     map.addRowsFromMetadata(grassRows);
 

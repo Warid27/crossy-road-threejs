@@ -3,6 +3,7 @@ import { endsUpInValidPosition } from "../utils/endsUpInValidPosition";
 import useMapStore from "./map-store";
 import useGameStateStore from "./game-state-store";
 import Player from "../components/Player";
+import sfxSound from "@/utils/sound";
 
 const usePlayerStore = create((set, get) => ({
   // Player instance
@@ -22,7 +23,7 @@ const usePlayerStore = create((set, get) => ({
     const { playerInstance } = get();
 
     // Reset the 3D model position
-    playerInstance.resetPosition();
+    playerInstance.resetPosition({ currentRow: 0, currentTile: 0 });
 
     // Reset the logical position and queue
     set({
@@ -62,7 +63,6 @@ const usePlayerStore = create((set, get) => ({
 
     const direction = movesQueue[0];
     const newPosition = { ...position };
-
     switch (direction) {
       case "forward":
         newPosition.currentRow += 1;
@@ -80,10 +80,11 @@ const usePlayerStore = create((set, get) => ({
         return currentPosition;
     }
 
+    const rows = mapStore.getMetadata();
+    const currentRow = rows[newPosition.currentRow];
+    sfxSound(currentRow);
     // Check if we need to add more rows
-    const currentMetadata = mapStore.getMetadata();
-    if (newPosition.currentRow > currentMetadata.length - 10)
-      mapStore.addRows(10);
+    if (newPosition.currentRow > rows.length - 10) mapStore.addRows(10);
 
     // Update the score display
     useGameStateStore.setState({
