@@ -10,7 +10,7 @@ export function hitTest() {
 
   // Get the metadata for the current row
   const currentMetadata = mapStore.getMetadata();
-  const row = currentMetadata[position.currentRow - 1];
+  const row = currentMetadata[position.currentRow];
   if (!row) return; // Exit if the row doesn't exist
 
   // Check if the row contains vehicles
@@ -36,7 +36,7 @@ export function hitTest() {
   }
 }
 
-function triggerGameOver(position) {
+function triggerGameOver() {
   const { setGameOver } = useGameStateStore.getState();
 
   // Update the game state to reflect game-over

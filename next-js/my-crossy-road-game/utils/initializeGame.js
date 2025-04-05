@@ -3,7 +3,17 @@ import useMapStore from "@/store/map-store";
 import usePlayerStore from "@/store/player-store";
 
 export const InitializeGame = () => {
-  usePlayerStore.getState().initializePlayer();
+  // Initialize the map
   useMapStore.getState().initializeMap();
-  useGameStateStore.setState({ score: 0, isGameOver: false });
+
+  // Initialize the player
+  usePlayerStore.getState().initializePlayer();
+
+  // Reset the game state
+  useGameStateStore.setState({
+    score: 0,
+    isGameOver: false,
+  });
+  const { playBackgroundMusic } = useGameStateStore.getState();
+  playBackgroundMusic();
 };

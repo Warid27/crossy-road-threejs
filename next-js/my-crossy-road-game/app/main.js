@@ -10,13 +10,17 @@ import { hitTest } from "./hitTest";
 import "./collectUserInput";
 import usePlayerStore from "@/store/player-store";
 import useMapStore from "@/store/map-store";
+import useGameStateStore from "@/store/game-state-store";
 import { InitializeGame } from "@/utils/initializeGame";
 
 export default function Main() {
   const canvasRef = useRef(null);
 
   useEffect(() => {
+    // Initialize the game first
     InitializeGame();
+
+    // Get models from store
     const player = usePlayerStore.getState().getPlayerModel();
     const map = useMapStore.getState().getMapModel();
     const canvas = canvasRef.current;
@@ -32,29 +36,28 @@ export default function Main() {
     const grid = createGrid();
     scene.add(grid);
 
-    const ambientLight = new THREE.AmbientLight();
-    scene.add(ambientLight);
+    // Use the same lighting setup as the original
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    player.add(ambientLight); // Keep this attached to player as in original
 
     const dirLight = new DirectionalLight();
     dirLight.target = player;
-    player.add(dirLight);
+    player.add(dirLight); // Keep this attached to player as in original
 
     const camera = Camera();
-    player.add(camera);
+    player.add(camera); // Keep camera attached to player
 
-    // Create the renderer
+    // Create the renderer with original settings
     const { renderer, dispose } = createRenderer(canvas);
-    renderer.setAnimationLoop(animate);
 
-    // Resize handler
+    let animationFrameId = null;
+
+    // Resize handler - keeping original logic
     const handleResize = () => {
-      // Ensure canvas display size matches renderer size
       canvas.style.width = `${window.innerWidth}px`;
       canvas.style.height = `${window.innerHeight}px`;
-      // Update renderer size
-      renderer.setSize(window.innerWidth, window.innerHeight, false); // false prevents CSS update conflict
+      renderer.setSize(window.innerWidth, window.innerHeight, false);
 
-      // Update camera properties
       const size = 300;
       const viewRatio = window.innerWidth / window.innerHeight;
       const width = viewRatio < 1 ? size : size * viewRatio;
@@ -68,23 +71,51 @@ export default function Main() {
       camera.updateProjectionMatrix();
     };
 
-    // Initial call to set correct dimensions
+    // Set initial size
     handleResize();
-
-    // Add resize event listener
     window.addEventListener("resize", handleResize);
 
+    // Animation function - slight optimization but keeping core logic
     function animate() {
-      animateVehicles();
-      animatePlayer();
-      hitTest();
-      renderer.render(scene, camera);
+      const isGameOver = useGameStateStore.getState().isGameOver;
+
+      if (!isGameOver) {
+        animateVehicles();
+        animatePlayer();
+        hitTest();
+        renderer.render(scene, camera);
+        animationFrameId = requestAnimationFrame(animate);
+      }
     }
 
-    // Cleanup on unmount
+    // Start animation loop
+    animationFrameId = requestAnimationFrame(animate);
+
+    // Enhanced cleanup on unmount
     return () => {
-      dispose();
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
+
+      // Remove event listeners
       window.removeEventListener("resize", handleResize);
+
+      // Remove objects from scene
+      scene.remove(grid);
+
+      // Clean up player resources while keeping original structure
+      if (player) {
+        player.remove(camera);
+        player.remove(ambientLight);
+        player.remove(dirLight);
+      }
+
+      // Dispose of objects
+      if (grid && grid.geometry) grid.geometry.dispose();
+
+      // Clear scene and dispose renderer
+      scene.clear();
+      dispose();
     };
   }, []);
 
