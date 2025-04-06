@@ -1,13 +1,15 @@
 import { create } from "zustand";
 import { endsUpInValidPosition } from "../utils/endsUpInValidPosition";
-import useMapStore from "./map-store";
-import useGameStateStore from "./game-state-store";
 import Player from "../components/Player";
 import sfxSound from "@/utils/sound";
 
+import useMapStore from "./map-store";
+import useGameStateStore from "./game-state-store";
+import useSkinStateStore from "./skin-store";
+
 const usePlayerStore = create((set, get) => ({
   // Player instance
-  playerInstance: new Player(),
+  playerInstance: null,
 
   // Player position state
   position: {
@@ -20,13 +22,15 @@ const usePlayerStore = create((set, get) => ({
 
   // Initialize/reset the player
   initializePlayer: () => {
-    const { playerInstance } = get();
+    const { skin } = useSkinStateStore.getState();
+    const playerInstance = new Player(skin);
 
     // Reset the 3D model position
     playerInstance.resetPosition({ currentRow: 0, currentTile: 0 });
 
     // Reset the logical position and queue
     set({
+      playerInstance,
       position: {
         currentRow: 0,
         currentTile: 0,

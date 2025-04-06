@@ -5,8 +5,11 @@ import { movePlayer, setupKeyboardControls } from "../collectUserInput";
 import { useEffect, useState } from "react";
 import { FaVolumeMute, FaVolumeUp } from "react-icons/fa";
 import { motion } from "framer-motion";
+import useAssets from "@/store/asset-store";
 
 export default function Home() {
+  const baseAssetUrl = useAssets.getState().baseAssetUrl;
+
   const [gameKey, setGameKey] = useState(0); // Unique key for the game
 
   const isGameOver = useGameStateStore((state) => state.isGameOver);
@@ -40,13 +43,15 @@ export default function Home() {
 
   useEffect(() => {
     if (isGameOver) {
-      const gameOverSound = new Audio("/sound/sfx/game-over.mp3");
+      const gameOverSound = new Audio(
+        `${baseAssetUrl}/sound/sfx/game-over.mp3`
+      );
       gameOverSound.preload = "auto";
       gameOverSound.volume = 0.5;
       gameOverSound.play();
       pauseBackgroundMusic();
     }
-  }, [isGameOver, pauseBackgroundMusic]);
+  }, [isGameOver, pauseBackgroundMusic, baseAssetUrl]);
 
   // Set up keyboard controls
   useEffect(() => {

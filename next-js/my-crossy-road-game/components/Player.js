@@ -1,39 +1,34 @@
 import * as THREE from "three";
 import { tileSize } from "@/app/constant";
+import Skin from "./Skin";
+
 // Class to create and manage the player 3D model
 export default class Player {
-  constructor() {
+  constructor(selectedModel) {
     // Create the main player group
     this.playerContainer = new THREE.Group();
 
     // Create the player body
     const player = new THREE.Group();
 
-    const geometry = new THREE.BoxGeometry(15, 15, 20);
-    const material = new THREE.MeshLambertMaterial({
-      color: "white",
-      flatShading: true,
-    });
-    const body = new THREE.Mesh(geometry, material);
-    body.castShadow = true;
-    body.receiveShadow = true;
-    body.position.z = 10;
-    player.add(body);
-
-    // Create the pink cap
-    const capGeometry = new THREE.BoxGeometry(2, 4, 2);
-    const capMaterial = new THREE.MeshLambertMaterial({
-      color: 0xf0619a,
-      flatShading: true,
-    });
-    const cap = new THREE.Mesh(capGeometry, capMaterial);
-    cap.castShadow = true;
-    cap.receiveShadow = true;
-    cap.position.z = 21;
-    player.add(cap);
+    this.skin = new Skin(selectedModel || "cat");
 
     // Add player to container
     this.playerContainer.add(player);
+
+    // Add the loaded model to the player group once it's ready
+    this.addModelToPlayer();
+  }
+
+  // Add the loaded model to the player group
+  addModelToPlayer() {
+    const interval = setInterval(() => {
+      const model = this.skin.getModel();
+      if (model) {
+        this.playerContainer.children[0].add(model); // Add the model to the player group
+        clearInterval(interval); // Stop checking once the model is added
+      }
+    }, 100); // Check every 100ms
   }
 
   // Get the THREE.js object

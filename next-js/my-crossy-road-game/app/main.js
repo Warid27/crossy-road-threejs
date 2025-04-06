@@ -15,7 +15,6 @@ import { InitializeGame } from "@/utils/initializeGame";
 
 export default function Main() {
   const canvasRef = useRef(null);
-
   useEffect(() => {
     // Initialize the game first
     InitializeGame();
