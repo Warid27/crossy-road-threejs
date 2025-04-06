@@ -1,25 +1,105 @@
 "use client";
 import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import useGameStateStore from "@/store/game-state-store";
-import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import useSkinStateStore from "@/store/skin-store";
+import SkinSelector from "@/components/SkinSelector";
 
 export default function HomePage() {
   const router = useRouter();
+
   const { playBackgroundMusic } = useGameStateStore();
+  const { updateSkin } = useSkinStateStore();
 
   // State to track if the music has started
   const [isMusicStarted, setIsMusicStarted] = useState(false);
+  const [selectedSkin, setSelectedSkin] = useState(0);
+  const [direction, setDirection] = useState(0);
+
+  const skins = ["cat", "dog", "lion", "bird"];
 
   const handleStartGame = () => {
     // Start the background music
     playBackgroundMusic();
     setIsMusicStarted(true); // Update state to show feedback
-
+    updateSkin(skins[selectedSkin]);
     // Navigate to the GameScene after a short delay
     setTimeout(() => {
       router.push("/game");
     }, 500); // Delay to allow the animation to complete
+  };
+
+  const handleSelectSkin = (action) => {
+    // Set direction based on action
+    setDirection(action === "next" ? 1 : -1);
+
+    if (action === "next") {
+      setSelectedSkin((prev) => (prev + 1) % skins.length);
+    } else if (action === "before") {
+      setSelectedSkin((prev) => (prev - 1 + skins.length) % skins.length);
+    }
+  };
+
+  const variants = {
+    enter: (direction) => ({
+      x: direction > 0 ? 100 : -100,
+      opacity: 0,
+      scale: 0.8,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+      scale: 1,
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 20,
+        duration: 0.4,
+      },
+    },
+    exit: (direction) => ({
+      x: direction < 0 ? 100 : -100,
+      opacity: 0,
+      scale: 0.8,
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 20,
+        duration: 0.2,
+      },
+    }),
+  };
+
+  // Button hover animation
+  const buttonVariants = {
+    hover: {
+      scale: 1.1,
+      backgroundColor: "#2563eb", // darker blue
+      boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.2)",
+      transition: {
+        type: "spring",
+        stiffness: 400,
+        damping: 10,
+      },
+    },
+    tap: {
+      scale: 0.95,
+      backgroundColor: "#1e40af", // even darker blue
+    },
+  };
+
+  // Title animation
+  const titleVariants = {
+    initial: { opacity: 0, y: -20 },
+    animate: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: "easeOut",
+      },
+    },
   };
 
   return (
@@ -36,6 +116,64 @@ export default function HomePage() {
       >
         Welcome to the Game!
       </motion.h1>
+
+      {/* Skin Selection */}
+      <div className="flex flex-col items-center mb-8 p-6">
+        <motion.h2
+          className="text-2xl mb-6 font-bold"
+          initial="initial"
+          animate="animate"
+          variants={titleVariants}
+        >
+          Select Your Character
+        </motion.h2>
+
+        <div className="flex items-center gap-6">
+          <motion.button
+            onClick={() => handleSelectSkin("before")}
+            className="bg-blue-500 px-5 py-3 rounded-lg cursor-pointer text-white"
+            whileHover="hover"
+            whileTap="tap"
+            variants={buttonVariants}
+            aria-label="Previous character"
+            style={{
+              fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+            }}
+          >
+            {"\u25C0"}
+          </motion.button>
+          <SkinSelector selectedSkin={skins[selectedSkin]} />
+          <motion.button
+            onClick={() => handleSelectSkin("next")}
+            className="bg-blue-500 px-5 py-3 rounded-lg cursor-pointer text-white"
+            whileHover="hover"
+            whileTap="tap"
+            variants={buttonVariants}
+            aria-label="Next character"
+            style={{
+              fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+            }}
+          >
+            {"\u25B6"}
+          </motion.button>
+        </div>
+
+        <motion.div
+          className="mt-6 px-6 py-2 bg-blue-600 rounded-full text-white text-sm"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{
+            opacity: 1,
+            y: 0,
+            transition: { delay: 0.4, duration: 0.5 },
+          }}
+          whileHover={{
+            scale: 1.05,
+            backgroundColor: "#2563eb",
+          }}
+        >
+          {skins[selectedSkin]} selected
+        </motion.div>
+      </div>
 
       {/* Play Button */}
       <motion.button

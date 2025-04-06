@@ -1,10 +1,13 @@
 import { create } from "zustand";
 import { InitializeGame } from "@/utils/initializeGame";
+import useAssets from "./asset-store";
+
+const baseAssetUrl = useAssets.getState().baseAssetUrl;
 
 // Create the audio object and preload it
 const bgSound =
   typeof window !== "undefined"
-    ? new Audio("/sound/music/Pixel Rush.mp3")
+    ? new Audio(`${baseAssetUrl}/sound/music/Pixel Rush.mp3`)
     : null;
 
 if (bgSound) {

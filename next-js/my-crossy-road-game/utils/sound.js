@@ -1,8 +1,13 @@
+import useAssets from "@/store/asset-store";
 export default function sfxSound(row) {
   if (!row) return;
 
-  const grassStepSound = new Audio("/sound/sfx/grass-step.wav");
-  const asphaltStepSound = new Audio("/sound/sfx/asphalt-step.wav");
+  const baseAssetUrl = useAssets.getState().baseAssetUrl;
+
+  const grassStepSound = new Audio(`${baseAssetUrl}/sound/sfx/grass-step.wav`);
+  const asphaltStepSound = new Audio(
+    `${baseAssetUrl}/sound/sfx/asphalt-step.wav`
+  );
 
   grassStepSound.preload = "auto";
   asphaltStepSound.preload = "auto";
