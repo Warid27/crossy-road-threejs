@@ -1,10 +1,17 @@
 "use client";
-import Main from "../main";
-import useGameStateStore from "@/store/game-state-store";
-import { movePlayer, setupKeyboardControls } from "../collectUserInput";
+// Modules
 import { useEffect, useState } from "react";
-import { FaVolumeMute, FaVolumeUp } from "react-icons/fa";
+import { FaVolumeMute, FaVolumeUp, FaHome, FaUndo } from "react-icons/fa";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
+
+// Comp
+import { Controller } from "@/components/Controls";
+import Main from "../main";
+import { movePlayer, setupKeyboardControls } from "../collectUserInput";
+
+// Store
+import useGameStateStore from "@/store/game-state-store";
 import useAssets from "@/store/asset-store";
 
 export default function Home() {
@@ -23,6 +30,8 @@ export default function Home() {
 
   const [activeDirection, setActiveDirection] = useState(null);
   const [shouldAnimateScore, setShouldAnimateScore] = useState(false); // State to control animation
+
+  const router = useRouter();
 
   const handleReset = () => {
     resetGame(); // Reset the game state
@@ -59,17 +68,6 @@ export default function Home() {
     return cleanup; // Cleanup on unmount
   }, []);
 
-  const buttonVariants = {
-    idle: {
-      scale: 1,
-      boxShadow: "3px 5px 0px 0px rgba(0,0,0,0.75)",
-    },
-    pressed: {
-      scale: 0.95,
-      boxShadow: "1px 2px 0px 0px rgba(0,0,0,0.75)",
-    },
-  };
-
   const resultContainerVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { duration: 0.5 } },
@@ -78,92 +76,12 @@ export default function Home() {
   return (
     <div className="relative min-h-screen w-full">
       <Main key={gameKey} />
-      <div
-        id="controls"
-        className="absolute bottom-5 w-full flex justify-center items-end"
-      >
-        <div className="grid grid-cols-3 gap-2.5 w-[150px]">
-          {/* Forward Button */}
-          <motion.button
-            onClick={() => {
-              movePlayer("forward");
-              setActiveDirection("forward");
-              setTimeout(() => setActiveDirection(null), 200);
-            }}
-            id="forward"
-            aria-label="Move Forward"
-            className={`col-span-3 w-full h-10 bg-white border border-gray-300 cursor-pointer outline-none hover:bg-gray-100`}
-            style={{
-              fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-            }}
-            variants={buttonVariants}
-            animate={activeDirection === "forward" ? "pressed" : "idle"}
-            transition={{ duration: 0.1 }}
-          >
-            {`\u25B2`}
-          </motion.button>
-
-          {/* Left Button */}
-          <motion.button
-            onClick={() => {
-              movePlayer("left");
-              setActiveDirection("left");
-              setTimeout(() => setActiveDirection(null), 200);
-            }}
-            id="left"
-            aria-label="Move Left"
-            className={`w-full h-10 bg-white border border-gray-300 cursor-pointer outline-none hover:bg-gray-100`}
-            style={{
-              fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-            }}
-            variants={buttonVariants}
-            animate={activeDirection === "left" ? "pressed" : "idle"}
-            transition={{ duration: 0.1 }}
-          >
-            {"\u25C0"}
-          </motion.button>
-
-          {/* Backward Button */}
-          <motion.button
-            onClick={() => {
-              movePlayer("backward");
-              setActiveDirection("backward");
-              setTimeout(() => setActiveDirection(null), 200);
-            }}
-            id="backward"
-            aria-label="Move Backward"
-            className={`w-full h-10 bg-white border border-gray-300 cursor-pointer outline-none hover:bg-gray-100`}
-            style={{
-              fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-            }}
-            variants={buttonVariants}
-            animate={activeDirection === "backward" ? "pressed" : "idle"}
-            transition={{ duration: 0.1 }}
-          >
-            {"\u25BC"}
-          </motion.button>
-
-          {/* Right Button */}
-          <motion.button
-            onClick={() => {
-              movePlayer("right");
-              setActiveDirection("right");
-              setTimeout(() => setActiveDirection(null), 200);
-            }}
-            id="right"
-            aria-label="Move Right"
-            className={`w-full h-10 bg-white border border-gray-300 cursor-pointer outline-none hover:bg-gray-100`}
-            style={{
-              fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-            }}
-            variants={buttonVariants}
-            animate={activeDirection === "right" ? "pressed" : "idle"}
-            transition={{ duration: 0.1 }}
-          >
-            {"\u25B6"}
-          </motion.button>
-        </div>
-      </div>
+      {/* <Controls  /> */}
+      <Controller
+        movePlayer={movePlayer}
+        activeDirection={activeDirection}
+        setActiveDirection={setActiveDirection}
+      />
 
       {/* Animated Score Display */}
       <motion.div
@@ -246,16 +164,38 @@ export default function Home() {
             </span>
           </motion.p>
 
-          {/* Retry Button */}
-          <motion.button
-            onClick={handleReset}
-            id="retry"
-            className="cursor-pointer bg-gradient-to-r from-red-500 to-red-700 text-white px-12 py-3 rounded-lg font-bold shadow-md hover:from-red-600 hover:to-red-800 transition-all duration-300 ease-in-out"
-            whileTap={{ scale: 0.95 }}
-            whileHover={{ scale: 1.05 }}
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{
+              y: 0,
+              opacity: 1,
+            }}
+            transition={{ delay: 0.6, duration: 0.5 }}
+            className="flex flex-row gap-3 items-center justify-center"
           >
-            RETRY
-          </motion.button>
+            {/* Home Button */}
+            <motion.button
+              onClick={() => {
+                router.push("/");
+              }}
+              id="retry"
+              className="cursor-pointer bg-gradient-to-r from-blue-500 to-blue-700 text-white px-5 py-5 text-2xl rounded-lg font-bold shadow-md hover:from-blue-600 hover:to-blue-800 transition-all duration-300 ease-in-out"
+              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.05 }}
+            >
+              <FaHome />
+            </motion.button>
+            {/* Retry Button */}
+            <motion.button
+              onClick={handleReset}
+              id="retry"
+              className="cursor-pointer bg-gradient-to-r from-red-500 to-red-700 text-white px-5 py-5 text-2xl rounded-lg font-bold shadow-md hover:from-red-600 hover:to-red-800 transition-all duration-300 ease-in-out"
+              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.05 }}
+            >
+              <FaUndo />
+            </motion.button>
+          </motion.div>
         </motion.div>
       </motion.div>
     </div>

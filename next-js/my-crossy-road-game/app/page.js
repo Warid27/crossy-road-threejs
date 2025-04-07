@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
+import { motion } from "framer-motion";
 import useGameStateStore from "@/store/game-state-store";
 import useSkinStateStore from "@/store/skin-store";
 import SkinSelector from "@/components/SkinSelector";
